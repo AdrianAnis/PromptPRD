@@ -17,12 +17,16 @@ function LoginForm() {
 
   return (
     <Card>
-      <h1 className="mb-4 text-xl font-semibold">Log in</h1>
+      <h1 className="mb-4 text-headline-md font-semibold">Log in</h1>
       <form action={action} className="flex flex-col gap-4">
         <input type="hidden" name="redirectTo" value={redirectTo} />
         <Input name="email" type="email" label="Email" placeholder="you@example.com" required />
         <Input name="password" type="password" label="Password" required />
-        {state?.error && <p className="text-sm text-error">{state.error}</p>}
+        {state?.error && (
+          <p className="rounded border border-error/30 bg-error/10 px-3 py-2 text-body-sm text-error">
+            {state.error}
+          </p>
+        )}
         <Button type="submit" isLoading={pending} className="w-full">
           Log in
         </Button>

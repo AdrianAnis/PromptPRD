@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Geist_Mono } from "next/font/google";
 import { ToastProvider } from "@/components/ui/Toast";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -18,6 +18,13 @@ export const metadata: Metadata = {
   description: "Turn a product idea into a structured PRD and development backlog with AI.",
 };
 
+const THEME_INIT_SCRIPT = `
+  (function () {
+    var stored = localStorage.getItem("promptprd-theme");
+    document.documentElement.dataset.theme = stored === "light" ? "light" : "dark";
+  })();
+`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -26,8 +33,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
+      className={`${inter.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <ToastProvider>{children}</ToastProvider>
       </body>

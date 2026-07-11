@@ -1,24 +1,48 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --surface: #f8fafc;
-  --border: #e2e8f0;
+  --background: #0d141b;
+  --foreground: #dce3ed;
+  --surface: #192028;
+  --surface-strong: #242b32;
+  --border: #3e4850;
 
-  --primary: #4f46e5;
+  --primary: #9fd7ff;
+  --primary-foreground: #00344c;
+  --secondary: #bec7d5;
+  --secondary-foreground: #28313c;
+  --success: #8fdf9a;
+  --success-foreground: #003914;
+  --warning: #ffcf7a;
+  --warning-foreground: #4a2f00;
+  --error: #ffb4ab;
+  --error-foreground: #690005;
+}
+
+:root[data-theme="light"] {
+  --background: #f7fafc;
+  --foreground: #0d141b;
+  --surface: #ffffff;
+  --surface-strong: #eef2f6;
+  --border: #d7dee5;
+
+  --primary: #0284c7;
   --primary-foreground: #ffffff;
-  --secondary: #64748b;
+  --secondary: #475569;
   --secondary-foreground: #ffffff;
-  --success: #16a34a;
-  --warning: #f59e0b;
-  --error: #dc2626;
+  --success: #15803d;
+  --success-foreground: #ffffff;
+  --warning: #b45309;
+  --warning-foreground: #ffffff;
+  --error: #b91c1c;
+  --error-foreground: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
+  --color-surface-strong: var(--surface-strong);
   --color-border: var(--border);
 
   --color-primary: var(--primary);
@@ -26,20 +50,35 @@
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-error: var(--error);
+  --color-error-foreground: var(--error-foreground);
 
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0f;
-    --foreground: #e2e8f0;
-    --surface: #13131a;
-    --border: #27272f;
-  }
+  --text-headline-lg: 24px;
+  --text-headline-lg--line-height: 32px;
+  --text-headline-lg--letter-spacing: -0.02em;
+  --text-headline-md: 20px;
+  --text-headline-md--line-height: 28px;
+  --text-headline-md--letter-spacing: -0.01em;
+  --text-headline-sm: 16px;
+  --text-headline-sm--line-height: 24px;
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 24px;
+  --text-body-md: 14px;
+  --text-body-md--line-height: 20px;
+  --text-body-sm: 12px;
+  --text-body-sm--line-height: 18px;
+  --text-label-md: 13px;
+  --text-label-md--line-height: 16px;
+  --text-label-md--letter-spacing: 0.01em;
+  --text-label-sm: 11px;
+  --text-label-sm--line-height: 14px;
+  --text-label-sm--letter-spacing: 0.03em;
 }
 
 body {

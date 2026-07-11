@@ -11,14 +11,24 @@ export interface ProjectFormState {
 }
 
 const createProjectSchema = z.object({
-  name: z.string().min(2, "Project name must be at least 2 characters"),
+  idea: z.string().min(10, "Ceritakan idemu sedikit lebih detail"),
 });
+
+function deriveProjectName(idea: string): string {
+  const trimmed = idea.trim();
+  if (!trimmed) return "Untitled Project";
+  if (trimmed.length <= 60) return trimmed;
+
+  const cut = trimmed.slice(0, 60);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${lastSpace > 20 ? cut.slice(0, lastSpace) : cut}…`;
+}
 
 export async function createProjectAction(
   _prevState: ProjectFormState,
   formData: FormData
 ): Promise<ProjectFormState> {
-  const parsed = createProjectSchema.safeParse({ name: formData.get("name") });
+  const parsed = createProjectSchema.safeParse({ idea: formData.get("idea") });
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
@@ -31,7 +41,11 @@ export async function createProjectAction(
 
   const { data, error } = await supabase
     .from("projects")
-    .insert({ user_id: user.id, name: parsed.data.name })
+    .insert({
+      user_id: user.id,
+      name: deriveProjectName(parsed.data.idea),
+      idea_prompt: parsed.data.idea,
+    })
     .select("id")
     .single();
 

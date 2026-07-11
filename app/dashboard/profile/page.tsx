@@ -8,9 +8,7 @@ export default async function ProfilePage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // The dashboard layout already redirects unauthenticated visitors, but
-  // this page fetches its own session independently — if it ever expires
-  // in the gap between the two checks, fail safe instead of throwing.
+
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase

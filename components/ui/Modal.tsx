@@ -27,7 +27,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
       onClose={onClose}
       onCancel={onClose}
       className={cn(
-        "m-auto rounded-xl border border-border bg-background p-0 shadow-lg backdrop:bg-black/40",
+        "m-auto rounded-lg border border-border bg-surface-strong p-0 backdrop:bg-black/60",
         "w-full max-w-md",
         className
       )}

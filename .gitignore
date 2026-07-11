@@ -47,6 +47,8 @@ next-env.d.ts
 prd.md
 AGENTS.md
 CLAUDE.md
+DESIGN.md
+task.md
 
 # supabase (database schema & migrations)
 supabase/
