@@ -79,6 +79,19 @@
   --text-label-sm: 11px;
   --text-label-sm--line-height: 14px;
   --text-label-sm--letter-spacing: 0.03em;
+
+  --animate-toast-in: toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 body {

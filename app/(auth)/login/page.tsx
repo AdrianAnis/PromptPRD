@@ -1,44 +1,36 @@
 "use client";
 
-import { Suspense, useActionState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { loginAction, type AuthFormState } from "@/lib/auth/actions";
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
+import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { Card } from "@/components/ui/Card";
+import { useOneShotSearchParam } from "@/lib/hooks/useOneShotSearchParam";
 
-const initialState: AuthFormState = {};
-
-function LoginForm() {
-  const [state, action, pending] = useActionState(loginAction, initialState);
+function LoginCard() {
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") ?? "";
+  const redirectTo = searchParams.get("redirectTo") ?? undefined;
+  const [oauthError, setOauthError] = useState(false);
+
+  useOneShotSearchParam("error", (value) => {
+    if (value === "oauth") setOauthError(true);
+  });
 
   return (
     <Card>
-      <h1 className="mb-4 text-headline-md font-semibold">Log in</h1>
-      <form action={action} className="flex flex-col gap-4">
-        <input type="hidden" name="redirectTo" value={redirectTo} />
-        <Input name="email" type="email" label="Email" placeholder="you@example.com" required />
-        <Input name="password" type="password" label="Password" required />
-        {state?.error && (
-          <p className="rounded border border-error/30 bg-error/10 px-3 py-2 text-body-sm text-error">
-            {state.error}
-          </p>
-        )}
-        <Button type="submit" isLoading={pending} className="w-full">
-          Log in
-        </Button>
-      </form>
-      <div className="mt-4 flex justify-between text-sm text-foreground/60">
-        <Link href="/forgot-password" className="hover:underline">
-          Forgot password?
-        </Link>
+      <h1 className="mb-4 text-headline-md font-semibold tracking-tight">Log in</h1>
+      {oauthError && (
+        <p className="mb-4 rounded border border-error/30 bg-error/10 px-3 py-2 text-body-sm text-error">
+          Google sign-in failed. Please try again.
+        </p>
+      )}
+      <GoogleSignInButton redirectTo={redirectTo} label="Continue with Google" />
+      <p className="mt-4 text-center text-sm text-foreground/60">
+        New here?{" "}
         <Link href="/register" className="text-primary hover:underline">
           Sign up
         </Link>
-      </div>
+      </p>
     </Card>
   );
 }
@@ -46,7 +38,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <Suspense>
-      <LoginForm />
+      <LoginCard />
     </Suspense>
   );
 }

@@ -1,18 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { logoutAction } from "@/lib/auth/actions";
-import { applyTheme, getCurrentTheme, type Theme } from "@/lib/theme";
+import { applyTheme, getCurrentTheme, getServerTheme, subscribeTheme, type Theme } from "@/lib/theme";
 
 export function AccountMenu({ email, fullName }: { email: string; fullName: string }) {
   const [open, setOpen] = useState(false);
-  const [theme, setTheme] = useState<Theme>("dark");
+  const theme = useSyncExternalStore(subscribeTheme, getCurrentTheme, getServerTheme);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setTheme(getCurrentTheme());
-  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -35,7 +31,6 @@ export function AccountMenu({ email, fullName }: { email: string; fullName: stri
   function toggleTheme() {
     const next: Theme = theme === "dark" ? "light" : "dark";
     applyTheme(next);
-    setTheme(next);
     setOpen(false);
   }
 

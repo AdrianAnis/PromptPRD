@@ -19,7 +19,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-border px-6">
+      <header className="flex h-14 shrink-0 items-center justify-between px-6">
         <Link href="/dashboard" className="text-headline-sm font-semibold">
           PromptPRD
         </Link>

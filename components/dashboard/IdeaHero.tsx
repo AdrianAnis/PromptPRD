@@ -15,22 +15,7 @@ export function IdeaHero({ hasPreviousProjects }: { hasPreviousProjects: boolean
 
   return (
     <div className="flex w-full max-w-2xl flex-col items-center gap-6 px-4 text-center">
-      <div className="flex items-center justify-center gap-3">
-        <h1 className="text-headline-lg font-semibold">Mau bikin apa?</h1>
-        <span className="flex size-9 items-center justify-center rounded-md bg-primary/10 text-primary">
-          <svg
-            aria-hidden
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            className="size-5"
-          >
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-            <path d="M14 2v6h6" />
-          </svg>
-        </span>
-      </div>
+      <h1 className="text-headline-lg font-semibold tracking-tight">Mau bikin apa?</h1>
       <p className="text-body-lg text-foreground/60">
         Ubah ide kamu menjadi rencana yang bisa dipahami AI tools pilihanmu.
       </p>
