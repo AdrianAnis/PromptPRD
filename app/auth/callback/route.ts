@@ -2,11 +2,6 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isSafeLocalPath } from "@/lib/utils";
 
-// How close created_at/last_sign_in_at must be to treat a sign-in as a fresh
-// registration (see isNewUser below). Widened past a "same instant" check to
-// tolerate normal latency in Supabase's identity-linking pipeline; a real
-// persisted "just registered" flag would be sturdier if this ever needs to
-// drive more than a one-off welcome toast.
 const NEW_USER_WINDOW_MS = 10_000;
 
 export async function GET(request: Request) {
@@ -20,9 +15,6 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
       const user = data.user;
-      // Google OAuth signs a new user's very first sign-in itself, so there's
-      // no separate "register" step to hook into — treat created_at and
-      // last_sign_in_at landing within the same window as "just registered".
       const isNewUser =
         !!user &&
         Math.abs(

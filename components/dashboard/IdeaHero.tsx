@@ -15,7 +15,7 @@ export function IdeaHero({ hasPreviousProjects }: { hasPreviousProjects: boolean
 
   return (
     <div className="flex w-full max-w-2xl flex-col items-center gap-6 px-4 text-center">
-      <h1 className="text-headline-lg font-semibold tracking-tight">Mau bikin apa?</h1>
+      <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">Mau bikin apa?</h1>
       <p className="text-body-lg text-foreground/60">
         Ubah ide kamu menjadi rencana yang bisa dipahami AI tools pilihanmu.
       </p>

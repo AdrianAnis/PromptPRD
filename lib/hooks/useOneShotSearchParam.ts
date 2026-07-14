@@ -24,5 +24,6 @@ export function useOneShotSearchParam(key: string, onMatch: (value: string) => v
     remaining.delete(key);
     const query = remaining.toString();
     router.replace(query ? `${pathname}?${query}` : pathname);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 }
