@@ -1,7 +1,14 @@
 import "server-only";
 import { GoogleGenAI } from "@google/genai";
 
-const MODEL = "gemini-2.5-flash";
+// "gemini-2.5-flash" (and its "-lite" sibling) return 404 "no longer
+// available to new users" on freshly created API keys — verified live
+// against this project's key. The "-latest" aliases stay pointed at
+// whatever model Google currently recommends, avoiding this class of
+// breakage; gemini-flash-lite-latest measured ~2s for requirement
+// question generation (well under NFR-001's 10s budget) with no
+// noticeable quality loss vs the full flash tier.
+const MODEL = "gemini-flash-lite-latest";
 const TIMEOUT_MS = 25_000;
 const MAX_RETRIES = 2;
 
@@ -66,7 +73,7 @@ export async function generateJSON<T>(
   systemInstruction?: string
 ): Promise<T> {
   const text = await generateText(prompt, systemInstruction);
-  const cleaned = text.replace(/^```json\s*|```\s*$/g, "").trim();
+  const cleaned = text.replace(/^```(?:json)?\s*|\s*```$/g, "").trim();
   try {
     return JSON.parse(cleaned) as T;
   } catch {

@@ -7,7 +7,12 @@ const DEBOUNCE_MS = 1200;
 type SaveStatus = "idle" | "saving" | "saved" | "error";
 type SaveResult = { error?: string } | void;
 
-export function useAutosave<T>(value: T, onSave: (value: T) => Promise<SaveResult>) {
+export function useAutosave<T>(
+  value: T,
+  onSave: (value: T) => Promise<SaveResult>,
+  options?: { enabled?: boolean }
+) {
+  const enabled = options?.enabled ?? true;
   const [status, setStatus] = useState<SaveStatus>("idle");
   const isFirstRender = useRef(true);
   const onSaveRef = useRef(onSave);
@@ -44,13 +49,15 @@ export function useAutosave<T>(value: T, onSave: (value: T) => Promise<SaveResul
       return;
     }
 
+    if (!enabled) return;
+
     setStatus("saving");
     const timeout = setTimeout(() => {
       void runSave(value);
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(timeout);
-  }, [value, runSave]);
+  }, [value, runSave, enabled]);
 
   return status;
 }

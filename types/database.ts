@@ -28,6 +28,7 @@ export type Project = {
 }
 
 export type RequirementAnswer = {
+  category: string;
   question: string;
   answer: string;
 }
