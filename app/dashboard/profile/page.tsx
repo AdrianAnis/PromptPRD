@@ -1,21 +1,14 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getAuthClaims, getOwnProfile } from "@/lib/supabase/auth";
 import { ProfileForm } from "@/components/profile/ProfileForm";
 
 export default async function ProfilePage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const claims = await getAuthClaims();
+  if (!claims) redirect("/login");
 
-  if (!user) redirect("/login");
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", user.id)
-    .single();
+  const profile = await getOwnProfile();
+  const email = typeof claims.email === "string" ? claims.email : "";
 
   return (
     <div className="mx-auto w-full max-w-md">
@@ -37,7 +30,7 @@ export default async function ProfilePage() {
         </svg>
         Kembali ke Dashboard
       </Link>
-      <ProfileForm email={user.email ?? ""} fullName={profile?.full_name ?? ""} />
+      <ProfileForm email={email} fullName={profile?.full_name ?? ""} />
     </div>
   );
 }

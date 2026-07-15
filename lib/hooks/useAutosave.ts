@@ -51,8 +51,8 @@ export function useAutosave<T>(
 
     if (!enabled) return;
 
-    setStatus("saving");
     const timeout = setTimeout(() => {
+      setStatus("saving");
       void runSave(value);
     }, DEBOUNCE_MS);
 
