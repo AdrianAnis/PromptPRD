@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { generateJSON, AIGenerationError } from "@/lib/ai/gemini";
+import { generateJSON, friendlyAIError } from "@/lib/ai/gemini";
 import { buildRequirementQuestionsPrompt } from "@/lib/ai/prompts";
 import type { RequirementAnswer } from "@/types/database";
 
@@ -17,15 +17,6 @@ const generatedQuestionsSchema = z
   )
   .min(3)
   .max(10);
-
-function friendlyAIError(err: unknown): string {
-  if (err instanceof AIGenerationError) {
-    return err.cause === "timeout"
-      ? "AI butuh waktu terlalu lama merespons. Coba lagi."
-      : "AI gagal menghasilkan pertanyaan. Coba lagi.";
-  }
-  return "Terjadi kesalahan tak terduga. Coba lagi.";
-}
 
 export async function generateRequirementQuestionsAction(
   projectId: string,
@@ -90,7 +81,7 @@ export async function generateRequirementQuestionsAction(
 
     questions = parsed.data.map((q) => ({ ...q, answer: "" }));
   } catch (err) {
-    return { error: friendlyAIError(err) };
+    return { error: friendlyAIError(err, "AI gagal menghasilkan pertanyaan. Coba lagi.") };
   }
 
   const { error: upsertError } = await supabase

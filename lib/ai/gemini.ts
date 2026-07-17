@@ -33,6 +33,20 @@ export class AIGenerationError extends Error {
   }
 }
 
+/**
+ * Maps an AI failure to a friendly Indonesian message. `apiErrorMessage` is
+ * the step-specific text shown when the AI responds but fails (empty/invalid
+ * output); timeouts and unexpected errors use shared wording.
+ */
+export function friendlyAIError(err: unknown, apiErrorMessage: string): string {
+  if (err instanceof AIGenerationError) {
+    return err.cause === "timeout"
+      ? "AI butuh waktu terlalu lama merespons. Coba lagi."
+      : apiErrorMessage;
+  }
+  return "Terjadi kesalahan tak terduga. Coba lagi.";
+}
+
 
 export async function generateText(
   prompt: string,

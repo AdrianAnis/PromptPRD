@@ -16,12 +16,17 @@ export function useAutosave<T>(
   const [status, setStatus] = useState<SaveStatus>("idle");
   const isFirstRender = useRef(true);
   const onSaveRef = useRef(onSave);
+  const enabledRef = useRef(enabled);
   const isSavingRef = useRef(false);
   const pendingValueRef = useRef<{ value: T } | null>(null);
 
   useEffect(() => {
     onSaveRef.current = onSave;
   }, [onSave]);
+
+  useEffect(() => {
+    enabledRef.current = enabled;
+  }, [enabled]);
 
   const runSave = useCallback(async (nextValue: T) => {
     if (isSavingRef.current) {
@@ -43,21 +48,23 @@ export function useAutosave<T>(
     isSavingRef.current = false;
   }, []);
 
+  // Only `value` changes schedule a save — deliberately NOT `enabled`, so
+  // toggling enabled (e.g. an AI regenerate finishing) never re-triggers a
+  // save of unchanged data. `enabled` is read live via the ref at fire time.
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
 
-    if (!enabled) return;
-
     const timeout = setTimeout(() => {
+      if (!enabledRef.current) return;
       setStatus("saving");
       void runSave(value);
     }, DEBOUNCE_MS);
 
     return () => clearTimeout(timeout);
-  }, [value, runSave, enabled]);
+  }, [value, runSave]);
 
   return status;
 }
