@@ -18,9 +18,6 @@ export const CATEGORY_LABELS: Record<TechCategory, string> = {
   deployment: "Deployment",
 };
 
-// Single source of truth for the dropdown UI, the AI prompt's allowed values,
-// and the coerce-to-null validator. Keep label === value, no version suffixes,
-// consistent casing.
 export const TECH_OPTIONS: Record<TechCategory, string[]> = {
   frontend: [
     "Next.js",

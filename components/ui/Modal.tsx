@@ -43,8 +43,6 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
           ✕
         </button>
       </div>
-      {/* Unmount contents while closed so per-open state (e.g. useActionState
-          form errors) resets instead of persisting stale across reopens. */}
       <div className="p-5">{open && children}</div>
     </dialog>
   );

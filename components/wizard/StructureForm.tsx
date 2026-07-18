@@ -11,6 +11,11 @@ import {
   generateProductStructureAction,
   saveProductStructureAction,
 } from "@/lib/structure/actions";
+import {
+  MAX_FEATURES_PER_MODULE,
+  MAX_MODULES,
+  MAX_NODE_NAME_LENGTH,
+} from "@/lib/structure/schema";
 import { newId, cn } from "@/lib/utils";
 import type { FeatureNode, ProductStructure } from "@/types/database";
 
@@ -141,21 +146,20 @@ function TreeEditor({
   initialModules: FeatureNode[];
 }) {
   const [modules, setModules] = useState<FeatureNode[]>(initialModules);
-  // Collapse state is UI-only — keeping it out of `modules` stops chevron
-  // clicks from triggering an autosave and leaking view state into the DB.
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
-  const [regenerateError, setRegenerateError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [isRegenerating, startRegenerate] = useTransition();
   const [isContinuing, startContinue] = useTransition();
   const router = useRouter();
 
-  const autosaveStatus = useAutosave(
+  const { status: autosaveStatus, flush } = useAutosave(
     modules,
     (value) => saveProductStructureAction(projectId, value),
     { enabled: !isRegenerating }
   );
 
   const isBusy = isRegenerating || isContinuing;
+  const canAddModule = modules.length < MAX_MODULES;
   const canContinue =
     modules.length > 0 &&
     modules.every(
@@ -225,11 +229,11 @@ function TreeEditor({
       return;
     }
 
-    setRegenerateError(null);
+    setActionError(null);
     startRegenerate(async () => {
       const result = await generateProductStructureAction(projectId);
       if (result.error) {
-        setRegenerateError(result.error);
+        setActionError(result.error);
         return;
       }
       router.refresh();
@@ -237,13 +241,18 @@ function TreeEditor({
   }
 
   function handleContinue() {
+    setActionError(null);
     startContinue(async () => {
-      const saved = await saveProductStructureAction(projectId, modules);
-      if (saved.error) {
-        setRegenerateError(saved.error);
+      const saved = await flush();
+      if (saved?.error) {
+        setActionError(saved.error);
         return;
       }
-      await updateProjectFieldsAction(projectId, { current_step: "prd" });
+      const advanced = await updateProjectFieldsAction(projectId, { current_step: "prd" });
+      if (advanced?.error) {
+        setActionError(advanced.error);
+        return;
+      }
       router.push(`/dashboard/projects/${projectId}/prd`);
     });
   }
@@ -277,6 +286,7 @@ function TreeEditor({
                   disabled={isBusy}
                   placeholder="Nama modul"
                   aria-label="Nama modul"
+                  maxLength={MAX_NODE_NAME_LENGTH}
                   className={cn(inlineInputClass, "flex-1 font-medium")}
                 />
                 <span className="shrink-0 px-1 text-label-sm text-foreground/40">
@@ -306,6 +316,7 @@ function TreeEditor({
                         disabled={isBusy}
                         placeholder="Nama fitur"
                         aria-label="Nama fitur"
+                        maxLength={MAX_NODE_NAME_LENGTH}
                         className={cn(inlineInputClass, "flex-1")}
                       />
                       <button
@@ -322,10 +333,12 @@ function TreeEditor({
                   <button
                     type="button"
                     onClick={() => addFeature(mod.id)}
-                    disabled={isBusy}
+                    disabled={isBusy || mod.children.length >= MAX_FEATURES_PER_MODULE}
                     className="w-fit rounded px-2 py-1 text-body-sm text-primary hover:bg-primary/10 disabled:opacity-50"
                   >
-                    + Tambah fitur
+                    {mod.children.length >= MAX_FEATURES_PER_MODULE
+                      ? `Maksimal ${MAX_FEATURES_PER_MODULE} fitur`
+                      : "+ Tambah fitur"}
                   </button>
                 </div>
               )}
@@ -336,10 +349,10 @@ function TreeEditor({
         <button
           type="button"
           onClick={addModule}
-          disabled={isBusy}
+          disabled={isBusy || !canAddModule}
           className="w-fit rounded px-2 py-1 text-body-sm text-primary hover:bg-primary/10 disabled:opacity-50"
         >
-          + Tambah modul
+          {canAddModule ? "+ Tambah modul" : `Maksimal ${MAX_MODULES} modul`}
         </button>
       </Card>
 
@@ -368,7 +381,7 @@ function TreeEditor({
         </div>
       </div>
 
-      {regenerateError && <p className="text-sm text-error">{regenerateError}</p>}
+      {actionError && <p className="text-sm text-error">{actionError}</p>}
     </div>
   );
 }

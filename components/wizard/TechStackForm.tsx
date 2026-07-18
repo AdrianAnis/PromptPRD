@@ -96,12 +96,12 @@ function DropdownForm({
       TECH_CATEGORIES.map((cat) => [cat, techStack?.[cat] ?? ""])
     ) as FieldState
   );
-  const [regenerateError, setRegenerateError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [isRegenerating, startRegenerate] = useTransition();
   const [isContinuing, startContinue] = useTransition();
   const router = useRouter();
 
-  const autosaveStatus = useAutosave(
+  const { status: autosaveStatus, flush } = useAutosave(
     fields,
     (value) => saveTechStackAction(projectId, value),
     { enabled: !isRegenerating }
@@ -119,11 +119,11 @@ function DropdownForm({
       return;
     }
 
-    setRegenerateError(null);
+    setActionError(null);
     startRegenerate(async () => {
       const result = await generateTechRecommendationAction(projectId);
       if (result.error) {
-        setRegenerateError(result.error);
+        setActionError(result.error);
         return;
       }
       router.refresh();
@@ -131,8 +131,18 @@ function DropdownForm({
   }
 
   function handleContinue() {
+    setActionError(null);
     startContinue(async () => {
-      await updateProjectFieldsAction(projectId, { current_step: "structure" });
+      const saved = await flush();
+      if (saved?.error) {
+        setActionError(saved.error);
+        return;
+      }
+      const advanced = await updateProjectFieldsAction(projectId, { current_step: "structure" });
+      if (advanced?.error) {
+        setActionError(advanced.error);
+        return;
+      }
       router.push(`/dashboard/projects/${projectId}/structure`);
     });
   }
@@ -175,7 +185,7 @@ function DropdownForm({
         </div>
       </div>
 
-      {regenerateError && <p className="text-sm text-error">{regenerateError}</p>}
+      {actionError && <p className="text-sm text-error">{actionError}</p>}
     </div>
   );
 }

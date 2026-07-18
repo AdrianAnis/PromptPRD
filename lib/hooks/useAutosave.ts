@@ -17,8 +17,10 @@ export function useAutosave<T>(
   const isFirstRender = useRef(true);
   const onSaveRef = useRef(onSave);
   const enabledRef = useRef(enabled);
+  const valueRef = useRef(value);
   const isSavingRef = useRef(false);
   const pendingValueRef = useRef<{ value: T } | null>(null);
+  const lastResultRef = useRef<SaveResult>(undefined);
 
   useEffect(() => {
     onSaveRef.current = onSave;
@@ -27,6 +29,10 @@ export function useAutosave<T>(
   useEffect(() => {
     enabledRef.current = enabled;
   }, [enabled]);
+
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
 
   const runSave = useCallback(async (nextValue: T) => {
     if (isSavingRef.current) {
@@ -38,6 +44,7 @@ export function useAutosave<T>(
     let current = nextValue;
     for (;;) {
       const result = await onSaveRef.current(current);
+      lastResultRef.current = result;
       setStatus(result?.error ? "error" : "saved");
 
       const pending = pendingValueRef.current;
@@ -48,9 +55,6 @@ export function useAutosave<T>(
     isSavingRef.current = false;
   }, []);
 
-  // Only `value` changes schedule a save — deliberately NOT `enabled`, so
-  // toggling enabled (e.g. an AI regenerate finishing) never re-triggers a
-  // save of unchanged data. `enabled` is read live via the ref at fire time.
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -66,5 +70,11 @@ export function useAutosave<T>(
     return () => clearTimeout(timeout);
   }, [value, runSave]);
 
-  return status;
+  const flush = useCallback(async (): Promise<SaveResult> => {
+    setStatus("saving");
+    await runSave(valueRef.current);
+    return lastResultRef.current;
+  }, [runSave]);
+
+  return { status, flush };
 }

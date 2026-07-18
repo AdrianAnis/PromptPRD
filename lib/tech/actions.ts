@@ -8,18 +8,8 @@ import type { RequirementAnswer } from "@/types/database";
 
 type TechFields = Record<TechCategory, string | null>;
 
-// Options short enough that a loose substring match would produce false
-// positives (e.g. "Go" appears inside "Django", "Mongo", "Google"). For these
-// we require an exact/case-insensitive match only — no substring fallback.
-const MIN_SUBSTRING_LEN = 4;
+const MIN_UNAMBIGUOUS_SUBSTRING_LEN = 4;
 
-/**
- * Maps an AI-produced value to one of the category's allowed options, or null.
- * Tries exact → case-insensitive → substring (only when both strings are long
- * enough to be unambiguous), so a minor deviation ("postgres" vs "PostgreSQL")
- * still lands on a real dropdown value while short tokens like "Go" can't
- * accidentally swallow unrelated values.
- */
 function coerceToOption(category: TechCategory, value: unknown): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
@@ -33,10 +23,10 @@ function coerceToOption(category: TechCategory, value: unknown): string | null {
   const ci = options.find((o) => o.toLowerCase() === lower);
   if (ci) return ci;
 
-  if (lower.length >= MIN_SUBSTRING_LEN) {
+  if (lower.length >= MIN_UNAMBIGUOUS_SUBSTRING_LEN) {
     const partial = options.find((o) => {
       const ol = o.toLowerCase();
-      if (ol.length < MIN_SUBSTRING_LEN) return false;
+      if (ol.length < MIN_UNAMBIGUOUS_SUBSTRING_LEN) return false;
       return ol.includes(lower) || lower.includes(ol);
     });
     if (partial) return partial;
@@ -55,7 +45,6 @@ export async function generateTechRecommendationAction(
   } = await supabase.auth.getUser();
   if (!user) return { error: "Not authenticated" };
 
-  // Ownership check + idea fetch in one query, before the paid AI call.
   const { data: project, error: projectError } = await supabase
     .from("projects")
     .select("idea_prompt")
@@ -88,8 +77,6 @@ export async function generateTechRecommendationAction(
       TECH_CATEGORIES.map((cat) => [cat, coerceToOption(cat, raw[cat])])
     ) as TechFields;
 
-    // If nothing matched, treat it as a failed recommendation rather than
-    // silently saving an all-empty stack that looks like a broken AI run.
     if (TECH_CATEGORIES.every((cat) => fields[cat] === null)) {
       console.error("Tech recommendation coerced every field to null:", raw);
       return { error: "AI gagal merekomendasikan teknologi. Coba lagi." };
@@ -115,8 +102,6 @@ export async function saveTechStackAction(
 ): Promise<{ error?: string }> {
   const supabase = await createClient();
 
-  // Send all six columns every save so the upsert never nulls an unspecified
-  // one; source flips to "manual" because the user is now hand-editing.
   const patch = Object.fromEntries(
     TECH_CATEGORIES.map((cat) => [cat, fields[cat] || null])
   ) as TechFields;

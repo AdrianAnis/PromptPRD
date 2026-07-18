@@ -3,7 +3,14 @@
 import { createClient } from "@/lib/supabase/server";
 import { generateJSON, friendlyAIError } from "@/lib/ai/gemini";
 import { buildProductStructurePrompt } from "@/lib/ai/prompts";
-import { aiStructureSchema, savedStructureSchema } from "@/lib/structure/schema";
+import {
+  AI_MIN_MODULES,
+  MAX_FEATURES_PER_MODULE,
+  MAX_MODULES,
+  MAX_NODE_NAME_LENGTH,
+  aiStructureSchema,
+  savedStructureSchema,
+} from "@/lib/structure/schema";
 import { newId } from "@/lib/utils";
 import type { FeatureNode, RequirementAnswer } from "@/types/database";
 
@@ -50,8 +57,13 @@ export async function generateProductStructureAction(
 
     const parsed = aiStructureSchema.safeParse(raw);
     if (!parsed.success) {
-      console.error("Product structure AI response failed validation:", raw);
-      return { error: "AI menghasilkan format yang tidak terduga. Coba lagi." };
+      console.error("Product structure AI response failed validation:", parsed.error.issues, raw);
+      const isTooFewModules = raw.length < AI_MIN_MODULES;
+      return {
+        error: isTooFewModules
+          ? "AI menghasilkan struktur yang terlalu sedikit. Coba lagi."
+          : "AI menghasilkan format yang tidak terduga. Coba lagi.",
+      };
     }
 
     structure = parsed.data.map((mod) => ({
@@ -83,7 +95,12 @@ export async function saveProductStructureAction(
   structure: FeatureNode[]
 ): Promise<{ error?: string }> {
   const parsed = savedStructureSchema.safeParse(structure);
-  if (!parsed.success) return { error: "Struktur tidak valid" };
+  if (!parsed.success) {
+    console.error("Structure save payload failed validation:", parsed.error.issues);
+    return {
+      error: `Struktur melewati batas (maksimal ${MAX_MODULES} modul, ${MAX_FEATURES_PER_MODULE} fitur per modul, nama ${MAX_NODE_NAME_LENGTH} karakter).`,
+    };
+  }
 
   const supabase = await createClient();
   const { error } = await supabase

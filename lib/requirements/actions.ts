@@ -93,10 +93,6 @@ export async function generateRequirementQuestionsAction(
 
   if (upsertError) return { error: upsertError.message };
 
-  // Unconditionally advances current_step to "requirement" and snapshots the
-  // exact idea text that was analyzed. Only "prompt" -> "requirement" exists
-  // today; invalidating downstream AI artifacts on a later regenerate is a
-  // Phase 2+ concern once "tech"/"structure" etc. actually have content.
   const { error: projectUpdateError } = await supabase
     .from("projects")
     .update({ idea_prompt: parsedIdea.data, current_step: "requirement", updated_at: new Date().toISOString() })

@@ -1,13 +1,6 @@
 import "server-only";
 import { GoogleGenAI } from "@google/genai";
 
-// "gemini-2.5-flash" (and its "-lite" sibling) return 404 "no longer
-// available to new users" on freshly created API keys — verified live
-// against this project's key. The "-latest" aliases stay pointed at
-// whatever model Google currently recommends, avoiding this class of
-// breakage; gemini-flash-lite-latest measured ~2s for requirement
-// question generation (well under NFR-001's 10s budget) with no
-// noticeable quality loss vs the full flash tier.
 const MODEL = "gemini-flash-lite-latest";
 const TIMEOUT_MS = 25_000;
 const MAX_RETRIES = 2;
@@ -33,11 +26,6 @@ export class AIGenerationError extends Error {
   }
 }
 
-/**
- * Maps an AI failure to a friendly Indonesian message. `apiErrorMessage` is
- * the step-specific text shown when the AI responds but fails (empty/invalid
- * output); timeouts and unexpected errors use shared wording.
- */
 export function friendlyAIError(err: unknown, apiErrorMessage: string): string {
   if (err instanceof AIGenerationError) {
     return err.cause === "timeout"

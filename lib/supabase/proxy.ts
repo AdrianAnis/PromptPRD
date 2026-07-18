@@ -52,9 +52,6 @@ export async function updateSession(request: NextRequest) {
   return response;
 }
 
-// Redirect responses are built fresh, so any auth cookies the Supabase
-// client rotated onto `response` (via setAll, e.g. a refreshed session)
-// must be copied over explicitly or the browser keeps the stale cookie.
 function copyCookies(target: NextResponse, source: NextResponse): NextResponse {
   source.cookies.getAll().forEach((cookie) => target.cookies.set(cookie));
   return target;

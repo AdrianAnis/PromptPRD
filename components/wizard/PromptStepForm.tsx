@@ -16,7 +16,7 @@ export function PromptStepForm({ project }: { project: Project }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const autosaveStatus = useAutosave(idea, (value) =>
+  const { status: autosaveStatus } = useAutosave(idea, (value) =>
     updateProjectFieldsAction(project.id, { idea_prompt: value.trim() })
   );
 
