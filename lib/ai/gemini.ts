@@ -1,5 +1,6 @@
 import "server-only";
 import { GoogleGenAI } from "@google/genai";
+import { stripWrappingCodeFence } from "@/lib/ai/output";
 
 const MODEL = "gemini-flash-lite-latest";
 const TIMEOUT_MS = 25_000;
@@ -84,7 +85,7 @@ export async function generateJSON<T>(
   options?: GenerateOptions
 ): Promise<T> {
   const text = await generateText(prompt, systemInstruction, options);
-  const cleaned = text.replace(/^```(?:json)?\s*|\s*```$/g, "").trim();
+  const cleaned = stripWrappingCodeFence(text);
   try {
     return JSON.parse(cleaned) as T;
   } catch {

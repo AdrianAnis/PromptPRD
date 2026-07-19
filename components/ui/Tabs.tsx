@@ -59,7 +59,7 @@ export function Tabs({ tabs, defaultValue, onChange }: TabsProps) {
             id={`${baseId}-panel-${tab.value}`}
             aria-labelledby={`${baseId}-tab-${tab.value}`}
             hidden={!isActive}
-            className={cn("pt-4", !isActive && "hidden")}
+            className="pt-4"
           >
             {tab.content}
           </div>

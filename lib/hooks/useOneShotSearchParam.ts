@@ -9,6 +9,7 @@ export function useOneShotSearchParam(key: string, onMatch: (value: string) => v
   const pathname = usePathname();
   const handled = useRef(false);
   const onMatchRef = useRef(onMatch);
+  const stripParamFromUrlRef = useRef<() => void>(() => {});
   const value = searchParams.get(key);
 
   useEffect(() => {
@@ -16,14 +17,18 @@ export function useOneShotSearchParam(key: string, onMatch: (value: string) => v
   }, [onMatch]);
 
   useEffect(() => {
+    stripParamFromUrlRef.current = () => {
+      const remaining = new URLSearchParams(searchParams);
+      remaining.delete(key);
+      const query = remaining.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname);
+    };
+  }, [searchParams, key, router, pathname]);
+
+  useEffect(() => {
     if (!value || handled.current) return;
     handled.current = true;
     onMatchRef.current(value);
-
-    const remaining = new URLSearchParams(searchParams);
-    remaining.delete(key);
-    const query = remaining.toString();
-    router.replace(query ? `${pathname}?${query}` : pathname);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    stripParamFromUrlRef.current();
   }, [value]);
 }

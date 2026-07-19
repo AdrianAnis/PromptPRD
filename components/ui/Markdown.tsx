@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -17,6 +18,14 @@ const markdownComponents: Components = {
   ),
   h4: ({ children }) => (
     <h4 className="mt-4 mb-2 text-body-lg font-semibold first:mt-0">{children}</h4>
+  ),
+  h5: ({ children }) => (
+    <h5 className="mt-4 mb-2 text-body-md font-semibold first:mt-0">{children}</h5>
+  ),
+  h6: ({ children }) => (
+    <h6 className="mt-4 mb-2 text-body-md font-semibold text-foreground/70 first:mt-0">
+      {children}
+    </h6>
   ),
   p: ({ children }) => <p className="mb-3 text-body-md leading-relaxed">{children}</p>,
   ul: ({ children }) => <ul className="mb-3 ml-5 list-disc space-y-1 text-body-md">{children}</ul>,
@@ -38,6 +47,14 @@ const markdownComponents: Components = {
     </a>
   ),
   hr: () => <hr className="my-6 border-border" />,
+  img: ({ src, alt }) =>
+    typeof src === "string" ? (
+      <img
+        src={src}
+        alt={alt ?? ""}
+        className="mb-3 h-auto max-w-full rounded border border-border"
+      />
+    ) : null,
   blockquote: ({ children }) => (
     <blockquote className="mb-3 border-l-2 border-primary/40 pl-4 text-body-md text-foreground/70">
       {children}
@@ -69,7 +86,7 @@ const markdownComponents: Components = {
     ) : null,
 };
 
-export function Markdown({ source }: { source: string }) {
+export const Markdown = memo(function Markdown({ source }: { source: string }) {
   return (
     <div className="text-foreground">
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
@@ -77,4 +94,4 @@ export function Markdown({ source }: { source: string }) {
       </ReactMarkdown>
     </div>
   );
-}
+});

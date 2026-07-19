@@ -4,15 +4,14 @@ import { createClient } from "@/lib/supabase/server";
 import { generateText, friendlyAIError } from "@/lib/ai/gemini";
 import { buildPrdPrompt } from "@/lib/ai/prompts";
 import { MIN_PRD_LENGTH, savedPrdSchema } from "@/lib/prd/schema";
-import {
-  findMissingSectionHeadings,
-  isMissingOnlyTrailingSections,
-  stripWrappingCodeFence,
-} from "@/lib/prd/markdown";
+import { findMissingSectionHeadings, isMissingOnlyTrailingSections } from "@/lib/prd/markdown";
+import { stripWrappingCodeFence } from "@/lib/ai/output";
 import type { FeatureNode, RequirementAnswer } from "@/types/database";
 
-const PRD_TIMEOUT_MS = 45_000;
-const PRD_MAX_RETRIES = 1;
+const PRD_GENERATION_BUDGET_MS = 50_000;
+const PRD_ATTEMPTS = 2;
+const PRD_TIMEOUT_MS = PRD_GENERATION_BUDGET_MS / PRD_ATTEMPTS;
+const PRD_MAX_RETRIES = PRD_ATTEMPTS - 1;
 
 export async function generatePrdAction(projectId: string): Promise<{ error?: string }> {
   const supabase = await createClient();

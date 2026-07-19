@@ -13,7 +13,7 @@ import { generatePrdAction, savePrdAction } from "@/lib/prd/actions";
 import { MAX_PRD_LENGTH, MIN_PRD_LENGTH } from "@/lib/prd/schema";
 import type { Prd } from "@/types/database";
 
-const GENERATION_TIME_NOTE = "PRD jauh lebih panjang dari step lain, jadi prosesnya bisa sampai sekitar satu menit.";
+const GENERATION_TIME_NOTE = "Prosesnya biasanya beberapa detik.";
 
 interface PrdEditorProps {
   projectId: string;
@@ -118,7 +118,7 @@ function DocumentEditor({
   const canContinue = markdown.trim().length >= MIN_PRD_LENGTH;
 
   function handleRegenerate() {
-    if (!confirm(`Regenerate akan menimpa seluruh isi PRD saat ini. ${GENERATION_TIME_NOTE} Lanjutkan?`)) {
+    if (!confirm("Regenerate akan menimpa seluruh isi PRD saat ini. Lanjutkan?")) {
       return;
     }
 
