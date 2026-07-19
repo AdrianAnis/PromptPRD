@@ -36,15 +36,23 @@ export function friendlyAIError(err: unknown, apiErrorMessage: string): string {
 }
 
 
+export interface GenerateOptions {
+  timeoutMs?: number;
+  maxRetries?: number;
+}
+
 export async function generateText(
   prompt: string,
-  systemInstruction?: string
+  systemInstruction?: string,
+  options?: GenerateOptions
 ): Promise<string> {
+  const timeoutMs = options?.timeoutMs ?? TIMEOUT_MS;
+  const maxRetries = options?.maxRetries ?? MAX_RETRIES;
   let lastError: unknown;
 
-  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
       const response = await getClient().models.generateContent({
@@ -72,9 +80,10 @@ export async function generateText(
 
 export async function generateJSON<T>(
   prompt: string,
-  systemInstruction?: string
+  systemInstruction?: string,
+  options?: GenerateOptions
 ): Promise<T> {
-  const text = await generateText(prompt, systemInstruction);
+  const text = await generateText(prompt, systemInstruction, options);
   const cleaned = text.replace(/^```(?:json)?\s*|\s*```$/g, "").trim();
   try {
     return JSON.parse(cleaned) as T;
