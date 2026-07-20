@@ -1,3 +1,5 @@
+const REVOKE_DELAY_MS = 10_000;
+
 function triggerDownload(url: string, filename: string) {
   const anchor = document.createElement("a");
   anchor.href = url;
@@ -5,13 +7,13 @@ function triggerDownload(url: string, filename: string) {
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
+  setTimeout(() => URL.revokeObjectURL(url), REVOKE_DELAY_MS);
 }
 
 export function downloadSvg(svg: string, filename: string) {
   const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   triggerDownload(url, filename);
-  URL.revokeObjectURL(url);
 }
 
 function readSvgSize(svg: string): { width: number; height: number } {
@@ -64,7 +66,6 @@ export async function downloadPng(svg: string, filename: string, backgroundColor
 
     const pngUrl = URL.createObjectURL(pngBlob);
     triggerDownload(pngUrl, filename);
-    URL.revokeObjectURL(pngUrl);
   } finally {
     URL.revokeObjectURL(url);
   }

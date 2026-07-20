@@ -11,7 +11,11 @@ import { useAutosave } from "@/lib/hooks/useAutosave";
 import { updateProjectFieldsAction } from "@/lib/projects/actions";
 import { generateClassDiagramAction, saveClassDiagramAction } from "@/lib/diagram/actions";
 import { downloadPng, downloadSvg } from "@/lib/diagram/export";
-import { MAX_MERMAID_LENGTH } from "@/lib/diagram/schema";
+import {
+  MAX_MERMAID_LENGTH,
+  MIN_MERMAID_LENGTH,
+  looksLikeClassDiagram,
+} from "@/lib/diagram/schema";
 import { getCurrentTheme } from "@/lib/theme";
 import type { ClassDiagram } from "@/types/database";
 
@@ -111,6 +115,7 @@ function Editor({ projectId, initialCode }: { projectId: string; initialCode: st
   );
 
   const isBusy = isRegenerating || isFinishing;
+  const canFinish = looksLikeClassDiagram(code) && code.trim().length >= MIN_MERMAID_LENGTH;
 
   const handleRendered = useCallback((svg: string) => {
     lastSvgRef.current = svg;
@@ -120,25 +125,32 @@ function Editor({ projectId, initialCode }: { projectId: string; initialCode: st
     return getCurrentTheme() === "light" ? "#ffffff" : "#0d141b";
   }
 
-  function handleExportSvg() {
-    setPreviewSource(code);
+  function currentDiagramSvg(): string | null {
+    if (code !== previewSource) {
+      setPreviewSource(code);
+      setActionError("Perubahan sedang dirender. Klik Export lagi sebentar.");
+      return null;
+    }
     if (!lastSvgRef.current) {
       setActionError("Buka tab Preview dulu untuk merender diagram.");
-      return;
+      return null;
     }
+    return lastSvgRef.current;
+  }
+
+  function handleExportSvg() {
+    const svg = currentDiagramSvg();
+    if (!svg) return;
     setActionError(null);
-    downloadSvg(lastSvgRef.current, "class-diagram.svg");
+    downloadSvg(svg, "class-diagram.svg");
   }
 
   async function handleExportPng() {
-    setPreviewSource(code);
-    if (!lastSvgRef.current) {
-      setActionError("Buka tab Preview dulu untuk merender diagram.");
-      return;
-    }
+    const svg = currentDiagramSvg();
+    if (!svg) return;
     setActionError(null);
     try {
-      await downloadPng(lastSvgRef.current, "class-diagram.png", backgroundColor());
+      await downloadPng(svg, "class-diagram.png", backgroundColor());
     } catch (err) {
       setActionError(err instanceof Error ? err.message : "Gagal mengekspor PNG.");
     }
@@ -158,6 +170,10 @@ function Editor({ projectId, initialCode }: { projectId: string; initialCode: st
   }
 
   function handleFinish() {
+    if (!canFinish) {
+      setActionError("Diagram belum valid. Pastikan diawali \"classDiagram\" dan tidak kosong.");
+      return;
+    }
     setActionError(null);
     startFinish(async () => {
       const saved = await flush();
@@ -233,7 +249,11 @@ function Editor({ projectId, initialCode }: { projectId: string; initialCode: st
           >
             Regenerate
           </Button>
-          <Button onClick={handleFinish} isLoading={isFinishing} disabled={isRegenerating}>
+          <Button
+            onClick={handleFinish}
+            isLoading={isFinishing}
+            disabled={isRegenerating || !canFinish}
+          >
             Selesaikan
           </Button>
         </div>

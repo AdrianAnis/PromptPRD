@@ -1,5 +1,6 @@
 import type { FeatureNode, TechStack } from "@/types/database";
 import { TECH_CATEGORIES, CATEGORY_LABELS } from "@/lib/tech/options";
+import { formatFeatureTree } from "./format";
 
 export function buildClassDiagramPrompt(
   prdMarkdown: string,
@@ -30,15 +31,7 @@ classDiagram
     }
     User "1" --> "*" Project : owns`;
 
-  const structureBlock =
-    structure.length > 0
-      ? structure
-          .map((mod) => {
-            const features = mod.children.map((f) => `  - ${f.name}`).join("\n");
-            return features ? `- ${mod.name}\n${features}` : `- ${mod.name}`;
-          })
-          .join("\n")
-      : "(Tidak ada struktur produk eksplisit.)";
+  const structureBlock = formatFeatureTree(structure, "(Tidak ada struktur produk eksplisit.)");
 
   const techBlock = techStack
     ? TECH_CATEGORIES.map(

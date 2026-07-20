@@ -1,4 +1,5 @@
 import type { FeatureNode } from "@/types/database";
+import { formatFeatureTree } from "./format";
 
 export function buildTaskListPrompt(
   prdMarkdown: string,
@@ -18,15 +19,7 @@ Aturan penting:
 Format output WAJIB berupa JSON array murni, tanpa markdown code fence, tanpa penjelasan, persis seperti ini:
 [{"title":"Autentikasi","stories":[{"title":"Pengguna bisa login dengan Google","tasks":[{"title":"Integrasi Supabase Auth provider Google","description":"Aktifkan provider Google di Supabase dan simpan kredensial OAuth."}]}]}]`;
 
-  const structureBlock =
-    structure.length > 0
-      ? structure
-          .map((mod) => {
-            const features = mod.children.map((f) => `  - ${f.name}`).join("\n");
-            return features ? `- ${mod.name}\n${features}` : `- ${mod.name}`;
-          })
-          .join("\n")
-      : "(Tidak ada struktur produk eksplisit.)";
+  const structureBlock = formatFeatureTree(structure, "(Tidak ada struktur produk eksplisit.)");
 
   const prompt = `Product Requirement Document:
 """

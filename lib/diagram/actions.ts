@@ -9,14 +9,13 @@ import {
   looksLikeClassDiagram,
   savedDiagramSchema,
 } from "@/lib/diagram/schema";
+import { MIN_PRD_FOR_DOWNSTREAM } from "@/lib/prd/schema";
 import type { FeatureNode } from "@/types/database";
 
 const DIAGRAM_GENERATION_BUDGET_MS = 50_000;
 const DIAGRAM_ATTEMPTS = 2;
 const DIAGRAM_TIMEOUT_MS = DIAGRAM_GENERATION_BUDGET_MS / DIAGRAM_ATTEMPTS;
 const DIAGRAM_MAX_RETRIES = DIAGRAM_ATTEMPTS - 1;
-
-const MIN_PRD_FOR_DIAGRAM = 200;
 
 export async function generateClassDiagramAction(
   projectId: string
@@ -50,7 +49,7 @@ export async function generateClassDiagramAction(
   ]);
 
   const prdMarkdown = prd?.content_markdown?.trim() ?? "";
-  if (prdMarkdown.length < MIN_PRD_FOR_DIAGRAM) {
+  if (prdMarkdown.length < MIN_PRD_FOR_DOWNSTREAM) {
     return { error: "Buat PRD dulu sebelum menghasilkan diagram." };
   }
 

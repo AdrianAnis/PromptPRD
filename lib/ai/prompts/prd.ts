@@ -1,6 +1,7 @@
 import type { FeatureNode, RequirementAnswer, TechStack } from "@/types/database";
 import { TECH_CATEGORIES, CATEGORY_LABELS } from "@/lib/tech/options";
 import { REQUIRED_SECTION_HEADINGS } from "@/lib/prd/schema";
+import { formatFeatureTree } from "./format";
 
 export function buildPrdPrompt(
   idea: string,
@@ -39,15 +40,10 @@ ${skeleton}
       ).join("\n")
     : "(Belum ada tech stack yang dipilih.)";
 
-  const structureBlock =
-    structure.length > 0
-      ? structure
-          .map((mod) => {
-            const features = mod.children.map((f) => `  - ${f.name}`).join("\n");
-            return features ? `- ${mod.name}\n${features}` : `- ${mod.name}`;
-          })
-          .join("\n")
-      : "(Belum ada struktur produk. Turunkan kebutuhan fungsional langsung dari ide dan jawaban requirement.)";
+  const structureBlock = formatFeatureTree(
+    structure,
+    "(Belum ada struktur produk. Turunkan kebutuhan fungsional langsung dari ide dan jawaban requirement.)"
+  );
 
   const prompt = `Ide produk:
 """

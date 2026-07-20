@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getProject } from "@/lib/projects/actions";
 import { createClient } from "@/lib/supabase/server";
+import { MIN_PRD_FOR_DOWNSTREAM } from "@/lib/prd/schema";
 import { WizardShell } from "@/components/wizard/WizardShell";
 import { TaskList } from "@/components/wizard/TaskList";
 
@@ -17,7 +18,7 @@ export default async function TasksStepPage({ params }: { params: Promise<{ id: 
     supabase.from("prds").select("content_markdown").eq("project_id", id).maybeSingle(),
   ]);
 
-  const hasPrd = (prd?.content_markdown?.trim().length ?? 0) >= 200;
+  const hasPrd = (prd?.content_markdown?.trim().length ?? 0) >= MIN_PRD_FOR_DOWNSTREAM;
 
   return (
     <WizardShell project={project}>

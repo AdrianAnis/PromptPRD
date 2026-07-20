@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { generateJSON, friendlyAIError } from "@/lib/ai/gemini";
 import { buildTaskListPrompt } from "@/lib/ai/prompts";
 import { aiTaskListSchema } from "@/lib/tasks/schema";
+import { MIN_PRD_FOR_DOWNSTREAM } from "@/lib/prd/schema";
 import { newId } from "@/lib/utils";
 import type { Epic, FeatureNode } from "@/types/database";
 
@@ -11,8 +12,6 @@ const TASKS_GENERATION_BUDGET_MS = 50_000;
 const TASKS_ATTEMPTS = 2;
 const TASKS_TIMEOUT_MS = TASKS_GENERATION_BUDGET_MS / TASKS_ATTEMPTS;
 const TASKS_MAX_RETRIES = TASKS_ATTEMPTS - 1;
-
-const MIN_PRD_FOR_TASKS = 200;
 
 export async function generateTaskListAction(projectId: string): Promise<{ error?: string }> {
   const supabase = await createClient();
@@ -43,7 +42,7 @@ export async function generateTaskListAction(projectId: string): Promise<{ error
   ]);
 
   const prdMarkdown = prd?.content_markdown?.trim() ?? "";
-  if (prdMarkdown.length < MIN_PRD_FOR_TASKS) {
+  if (prdMarkdown.length < MIN_PRD_FOR_DOWNSTREAM) {
     return { error: "Buat PRD dulu sebelum menghasilkan daftar task." };
   }
 

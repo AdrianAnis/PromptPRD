@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const MAX_PRD_LENGTH = 60_000;
 export const MIN_PRD_LENGTH = 400;
+export const MIN_PRD_FOR_DOWNSTREAM = 200;
 
 export const REQUIRED_SECTION_HEADINGS = [
   "Ikhtisar",
