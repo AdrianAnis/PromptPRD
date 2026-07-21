@@ -1,19 +1,7 @@
-const REVOKE_DELAY_MS = 10_000;
-
-function triggerDownload(url: string, filename: string) {
-  const anchor = document.createElement("a");
-  anchor.href = url;
-  anchor.download = filename;
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  setTimeout(() => URL.revokeObjectURL(url), REVOKE_DELAY_MS);
-}
+import { downloadTextFile, triggerDownload } from "@/lib/export/download";
 
 export function downloadSvg(svg: string, filename: string) {
-  const blob = new Blob([svg], { type: "image/svg+xml;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  triggerDownload(url, filename);
+  downloadTextFile(svg, filename, "image/svg+xml");
 }
 
 function readSvgSize(svg: string): { width: number; height: number } {

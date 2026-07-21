@@ -99,3 +99,43 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
+
+@page {
+  margin: 18mm;
+}
+
+@media print {
+  :root,
+  :root[data-theme="light"] {
+    --background: #ffffff;
+    --foreground: #111827;
+    --surface: #ffffff;
+    --surface-strong: #f3f4f6;
+    --border: #d1d5db;
+    --primary: #1d4ed8;
+  }
+
+  body {
+    background: #ffffff;
+    color: #111827;
+  }
+
+  a {
+    color: #111827;
+    text-decoration: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+  }
+
+  pre,
+  blockquote,
+  table,
+  img {
+    break-inside: avoid;
+  }
+}
