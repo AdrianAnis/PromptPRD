@@ -1,10 +1,12 @@
 import type { RequirementAnswer, TechStack } from "@/types/database";
 import { TECH_CATEGORIES, CATEGORY_LABELS } from "@/lib/tech/options";
+import { formatInstruction } from "./format";
 
 export function buildProductStructurePrompt(
   idea: string,
   answers: RequirementAnswer[],
-  techStack: TechStack | null
+  techStack: TechStack | null,
+  instruction?: string
 ): { prompt: string; systemInstruction: string } {
   const systemInstruction = `Kamu adalah seorang product architect senior. Berdasarkan ide produk, jawaban requirement, dan tech stack yang dipilih, susun struktur aplikasi berupa daftar MODUL beserta FITUR di dalamnya.
 
@@ -41,7 +43,7 @@ ${answersBlock}
 Tech stack yang dipilih:
 ${selectedTech}
 
-Susun struktur modul dan fitur untuk produk di atas, ikuti semua aturan di system instruction.`;
+Susun struktur modul dan fitur untuk produk di atas, ikuti semua aturan di system instruction.${formatInstruction(instruction)}`;
 
   return { prompt, systemInstruction };
 }

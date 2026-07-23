@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { InstructionField } from "@/components/wizard/InstructionField";
 import { useAutosave } from "@/lib/hooks/useAutosave";
 import { updateProjectFieldsAction } from "@/lib/projects/actions";
 import {
@@ -148,6 +149,7 @@ function TreeEditor({
   const [modules, setModules] = useState<FeatureNode[]>(initialModules);
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [actionError, setActionError] = useState<string | null>(null);
+  const [instruction, setInstruction] = useState("");
   const [isRegenerating, startRegenerate] = useTransition();
   const [isContinuing, startContinue] = useTransition();
   const router = useRouter();
@@ -231,7 +233,7 @@ function TreeEditor({
 
     setActionError(null);
     startRegenerate(async () => {
-      const result = await generateProductStructureAction(projectId);
+      const result = await generateProductStructureAction(projectId, instruction.trim() || undefined);
       if (result.error) {
         setActionError(result.error);
         return;
@@ -355,6 +357,8 @@ function TreeEditor({
           {canAddModule ? "+ Tambah modul" : `Maksimal ${MAX_MODULES} modul`}
         </button>
       </Card>
+
+      <InstructionField value={instruction} onChange={setInstruction} disabled={isBusy} />
 
       <div className="flex items-center justify-between gap-4">
         <span className="text-body-sm text-foreground/50">

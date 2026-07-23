@@ -15,7 +15,8 @@ import { newId } from "@/lib/utils";
 import type { FeatureNode, RequirementAnswer } from "@/types/database";
 
 export async function generateProductStructureAction(
-  projectId: string
+  projectId: string,
+  instruction?: string
 ): Promise<{ error?: string }> {
   const supabase = await createClient();
   const {
@@ -47,7 +48,12 @@ export async function generateProductStructureAction(
 
   let structure: FeatureNode[];
   try {
-    const { prompt, systemInstruction } = buildProductStructurePrompt(idea, answers, techStack);
+    const { prompt, systemInstruction } = buildProductStructurePrompt(
+      idea,
+      answers,
+      techStack,
+      instruction
+    );
     const raw = await generateJSON<unknown>(prompt, systemInstruction);
 
     if (!Array.isArray(raw)) {

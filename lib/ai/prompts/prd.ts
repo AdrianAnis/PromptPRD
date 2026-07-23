@@ -1,13 +1,14 @@
 import type { FeatureNode, RequirementAnswer, TechStack } from "@/types/database";
 import { TECH_CATEGORIES, CATEGORY_LABELS } from "@/lib/tech/options";
 import { REQUIRED_SECTION_HEADINGS } from "@/lib/prd/schema";
-import { formatFeatureTree } from "./format";
+import { formatFeatureTree, formatInstruction } from "./format";
 
 export function buildPrdPrompt(
   idea: string,
   answers: RequirementAnswer[],
   techStack: TechStack | null,
-  structure: FeatureNode[]
+  structure: FeatureNode[],
+  instruction?: string
 ): { prompt: string; systemInstruction: string } {
   const skeleton = REQUIRED_SECTION_HEADINGS.map((heading) => `## ${heading}`).join("\n\n");
 
@@ -59,7 +60,7 @@ ${techBlock}
 Struktur produk (modul dan fitur):
 ${structureBlock}
 
-Tulis PRD lengkap untuk produk di atas, ikuti semua aturan di system instruction.`;
+Tulis PRD lengkap untuk produk di atas, ikuti semua aturan di system instruction.${formatInstruction(instruction)}`;
 
   return { prompt, systemInstruction };
 }

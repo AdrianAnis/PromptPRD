@@ -1,11 +1,12 @@
 import type { FeatureNode, TechStack } from "@/types/database";
 import { TECH_CATEGORIES, CATEGORY_LABELS } from "@/lib/tech/options";
-import { formatFeatureTree } from "./format";
+import { formatFeatureTree, formatInstruction } from "./format";
 
 export function buildClassDiagramPrompt(
   prdMarkdown: string,
   structure: FeatureNode[],
-  techStack: TechStack | null
+  techStack: TechStack | null,
+  instruction?: string
 ): { prompt: string; systemInstruction: string } {
   const systemInstruction = `Kamu adalah seorang software architect yang membuat Class Diagram (UML) dari sebuah Product Requirement Document.
 
@@ -50,7 +51,7 @@ ${structureBlock}
 Tech stack:
 ${techBlock}
 
-Buat Class Diagram Mermaid untuk produk di atas, ikuti semua aturan di system instruction.`;
+Buat Class Diagram Mermaid untuk produk di atas, ikuti semua aturan di system instruction.${formatInstruction(instruction)}`;
 
   return { prompt, systemInstruction };
 }

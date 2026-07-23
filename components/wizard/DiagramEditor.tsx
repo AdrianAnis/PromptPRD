@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
 import { MermaidDiagram } from "@/components/ui/MermaidDiagram";
+import { InstructionField } from "@/components/wizard/InstructionField";
 import { useAutosave } from "@/lib/hooks/useAutosave";
 import { updateProjectFieldsAction } from "@/lib/projects/actions";
 import { generateClassDiagramAction, saveClassDiagramAction } from "@/lib/diagram/actions";
@@ -103,6 +104,7 @@ function Editor({ projectId, initialCode }: { projectId: string; initialCode: st
   const [code, setCode] = useState(initialCode);
   const [previewSource, setPreviewSource] = useState(initialCode);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [instruction, setInstruction] = useState("");
   const [isRegenerating, startRegenerate] = useTransition();
   const [isFinishing, startFinish] = useTransition();
   const lastSvgRef = useRef("");
@@ -160,7 +162,7 @@ function Editor({ projectId, initialCode }: { projectId: string; initialCode: st
     if (!confirm("Regenerate akan menimpa kode diagram saat ini. Lanjutkan?")) return;
     setActionError(null);
     startRegenerate(async () => {
-      const result = await generateClassDiagramAction(projectId);
+      const result = await generateClassDiagramAction(projectId, instruction.trim() || undefined);
       if (result.error) {
         setActionError(result.error);
         return;
@@ -225,6 +227,8 @@ function Editor({ projectId, initialCode }: { projectId: string; initialCode: st
           ]}
         />
       </Card>
+
+      <InstructionField value={instruction} onChange={setInstruction} disabled={isBusy} />
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">

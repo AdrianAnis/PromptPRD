@@ -13,7 +13,10 @@ const TASKS_ATTEMPTS = 2;
 const TASKS_TIMEOUT_MS = TASKS_GENERATION_BUDGET_MS / TASKS_ATTEMPTS;
 const TASKS_MAX_RETRIES = TASKS_ATTEMPTS - 1;
 
-export async function generateTaskListAction(projectId: string): Promise<{ error?: string }> {
+export async function generateTaskListAction(
+  projectId: string,
+  instruction?: string
+): Promise<{ error?: string }> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -50,7 +53,7 @@ export async function generateTaskListAction(projectId: string): Promise<{ error
 
   let epics: Epic[];
   try {
-    const { prompt, systemInstruction } = buildTaskListPrompt(prdMarkdown, structure);
+    const { prompt, systemInstruction } = buildTaskListPrompt(prdMarkdown, structure, instruction);
     const raw = await generateJSON<unknown>(prompt, systemInstruction, {
       timeoutMs: TASKS_TIMEOUT_MS,
       maxRetries: TASKS_MAX_RETRIES,

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { InstructionField } from "@/components/wizard/InstructionField";
 import { updateProjectFieldsAction } from "@/lib/projects/actions";
 import { generateTaskListAction } from "@/lib/tasks/actions";
 import { cn } from "@/lib/utils";
@@ -110,6 +111,7 @@ function ChevronIcon({ collapsed }: { collapsed: boolean }) {
 function TaskTree({ projectId, epics }: { projectId: string; epics: Epic[] }) {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [actionError, setActionError] = useState<string | null>(null);
+  const [instruction, setInstruction] = useState("");
   const [isRegenerating, startRegenerate] = useTransition();
   const [isContinuing, startContinue] = useTransition();
   const router = useRouter();
@@ -132,7 +134,7 @@ function TaskTree({ projectId, epics }: { projectId: string; epics: Epic[] }) {
     if (!confirm("Regenerate akan menimpa seluruh daftar task yang ada. Lanjutkan?")) return;
     setActionError(null);
     startRegenerate(async () => {
-      const result = await generateTaskListAction(projectId);
+      const result = await generateTaskListAction(projectId, instruction.trim() || undefined);
       if (result.error) {
         setActionError(result.error);
         return;
@@ -200,6 +202,12 @@ function TaskTree({ projectId, epics }: { projectId: string; epics: Epic[] }) {
           );
         })}
       </div>
+
+      <InstructionField
+        value={instruction}
+        onChange={setInstruction}
+        disabled={isRegenerating || isContinuing}
+      />
 
       <div className="flex items-center justify-end gap-2">
         <Button

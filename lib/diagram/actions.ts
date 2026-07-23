@@ -18,7 +18,8 @@ const DIAGRAM_TIMEOUT_MS = DIAGRAM_GENERATION_BUDGET_MS / DIAGRAM_ATTEMPTS;
 const DIAGRAM_MAX_RETRIES = DIAGRAM_ATTEMPTS - 1;
 
 export async function generateClassDiagramAction(
-  projectId: string
+  projectId: string,
+  instruction?: string
 ): Promise<{ error?: string }> {
   const supabase = await createClient();
   const {
@@ -57,7 +58,12 @@ export async function generateClassDiagramAction(
 
   let code: string;
   try {
-    const { prompt, systemInstruction } = buildClassDiagramPrompt(prdMarkdown, structure, techStack);
+    const { prompt, systemInstruction } = buildClassDiagramPrompt(
+      prdMarkdown,
+      structure,
+      techStack,
+      instruction
+    );
     const raw = await generateText(prompt, systemInstruction, {
       timeoutMs: DIAGRAM_TIMEOUT_MS,
       maxRetries: DIAGRAM_MAX_RETRIES,

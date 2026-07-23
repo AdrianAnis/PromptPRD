@@ -1,9 +1,10 @@
 import type { FeatureNode } from "@/types/database";
-import { formatFeatureTree } from "./format";
+import { formatFeatureTree, formatInstruction } from "./format";
 
 export function buildTaskListPrompt(
   prdMarkdown: string,
-  structure: FeatureNode[]
+  structure: FeatureNode[],
+  instruction?: string
 ): { prompt: string; systemInstruction: string } {
   const systemInstruction = `Kamu adalah seorang Engineering Lead yang memecah Product Requirement Document menjadi backlog pengembangan yang siap dikerjakan tim.
 
@@ -29,7 +30,7 @@ ${prdMarkdown}
 Struktur produk (modul dan fitur):
 ${structureBlock}
 
-Pecah PRD di atas menjadi backlog Epic, User Story, dan Task, ikuti semua aturan di system instruction.`;
+Pecah PRD di atas menjadi backlog Epic, User Story, dan Task, ikuti semua aturan di system instruction.${formatInstruction(instruction)}`;
 
   return { prompt, systemInstruction };
 }

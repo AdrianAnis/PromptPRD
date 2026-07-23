@@ -13,7 +13,10 @@ const PRD_ATTEMPTS = 2;
 const PRD_TIMEOUT_MS = PRD_GENERATION_BUDGET_MS / PRD_ATTEMPTS;
 const PRD_MAX_RETRIES = PRD_ATTEMPTS - 1;
 
-export async function generatePrdAction(projectId: string): Promise<{ error?: string }> {
+export async function generatePrdAction(
+  projectId: string,
+  instruction?: string
+): Promise<{ error?: string }> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -51,7 +54,13 @@ export async function generatePrdAction(projectId: string): Promise<{ error?: st
 
   let markdown: string;
   try {
-    const { prompt, systemInstruction } = buildPrdPrompt(idea, answers, techStack, structure);
+    const { prompt, systemInstruction } = buildPrdPrompt(
+      idea,
+      answers,
+      techStack,
+      structure,
+      instruction
+    );
     const raw = await generateText(prompt, systemInstruction, {
       timeoutMs: PRD_TIMEOUT_MS,
       maxRetries: PRD_MAX_RETRIES,

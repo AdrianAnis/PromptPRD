@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Tabs } from "@/components/ui/Tabs";
 import { Markdown } from "@/components/ui/Markdown";
+import { InstructionField } from "@/components/wizard/InstructionField";
 import { useAutosave } from "@/lib/hooks/useAutosave";
 import { updateProjectFieldsAction } from "@/lib/projects/actions";
 import { generatePrdAction, savePrdAction } from "@/lib/prd/actions";
@@ -104,6 +105,7 @@ function DocumentEditor({
   const [markdown, setMarkdown] = useState(initialMarkdown);
   const [previewSource, setPreviewSource] = useState(initialMarkdown);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [instruction, setInstruction] = useState("");
   const [isRegenerating, startRegenerate] = useTransition();
   const [isContinuing, startContinue] = useTransition();
   const router = useRouter();
@@ -124,7 +126,7 @@ function DocumentEditor({
 
     setActionError(null);
     startRegenerate(async () => {
-      const result = await generatePrdAction(projectId);
+      const result = await generatePrdAction(projectId, instruction.trim() || undefined);
       if (result.error) {
         setActionError(result.error);
         return;
@@ -185,6 +187,8 @@ function DocumentEditor({
           ]}
         />
       </Card>
+
+      <InstructionField value={instruction} onChange={setInstruction} disabled={isBusy} />
 
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
