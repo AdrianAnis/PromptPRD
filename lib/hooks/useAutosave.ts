@@ -41,19 +41,39 @@ export function useAutosave<T>(
     }
 
     isSavingRef.current = true;
-    let current = nextValue;
-    for (;;) {
-      const result = await onSaveRef.current(current);
-      lastResultRef.current = result;
-      setStatus(result?.error ? "error" : "saved");
+    try {
+      let current = nextValue;
+      for (;;) {
+        try {
+          const result = await onSaveRef.current(current);
+          lastResultRef.current = result;
+          setStatus(result?.error ? "error" : "saved");
+        } catch (err) {
+          lastResultRef.current = {
+            error: err instanceof Error ? err.message : "Gagal menyimpan.",
+          };
+          setStatus("error");
+          break;
+        }
 
-      const pending = pendingValueRef.current;
-      if (!pending) break;
-      pendingValueRef.current = null;
-      current = pending.value;
+        const pending = pendingValueRef.current;
+        if (!pending) break;
+        pendingValueRef.current = null;
+        current = pending.value;
+      }
+    } finally {
+      isSavingRef.current = false;
     }
-    isSavingRef.current = false;
   }, []);
+
+  useEffect(() => {
+    function handleReconnect() {
+      if (status === "error") void runSave(valueRef.current);
+    }
+
+    window.addEventListener("online", handleReconnect);
+    return () => window.removeEventListener("online", handleReconnect);
+  }, [status, runSave]);
 
   useEffect(() => {
     if (isFirstRender.current) {
