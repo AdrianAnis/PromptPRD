@@ -8,7 +8,7 @@ interface StepperProps {
 
 export function Stepper({ steps, currentIndex, onStepClick }: StepperProps) {
   return (
-    <ol className="flex w-full items-center" aria-label="Progress">
+    <ol className="flex w-full items-center overflow-x-auto" aria-label="Progress">
       {steps.map((step, index) => {
         const isCompleted = index < currentIndex;
         const isCurrent = index === currentIndex;
@@ -32,15 +32,15 @@ export function Stepper({ steps, currentIndex, onStepClick }: StepperProps) {
                   "flex size-7 shrink-0 items-center justify-center rounded-full border text-xs",
                   isCompleted && "border-primary bg-primary text-primary-foreground",
                   isCurrent && "border-primary text-primary",
-                  !isCompleted && !isCurrent && "border-border text-foreground/50"
+                  !isCompleted && !isCurrent && "border-border text-foreground-muted"
                 )}
               >
                 {isCompleted ? "✓" : index + 1}
               </span>
               <span
                 className={cn(
-                  "hidden sm:inline",
-                  !isCompleted && !isCurrent && "text-foreground/50"
+                  "hidden whitespace-nowrap lg:inline",
+                  !isCompleted && !isCurrent && "text-foreground-muted"
                 )}
               >
                 {step}

@@ -263,7 +263,7 @@ function TreeEditor({
     <div className="flex flex-col gap-4">
       <Card className="flex flex-col gap-2">
         {modules.length === 0 && (
-          <p className="py-4 text-center text-body-sm text-foreground/50">
+          <p className="py-4 text-center text-body-sm text-foreground-muted">
             Belum ada modul. Tambahkan modul pertamamu.
           </p>
         )}
@@ -278,7 +278,7 @@ function TreeEditor({
                   onClick={() => toggleCollapsed(mod.id)}
                   aria-label={isCollapsed ? "Buka modul" : "Tutup modul"}
                   aria-expanded={!isCollapsed}
-                  className="rounded p-1 text-foreground/50 hover:bg-surface-strong hover:text-foreground"
+                  className="rounded p-1 text-foreground-muted hover:bg-surface-strong hover:text-foreground"
                 >
                   <ChevronIcon collapsed={isCollapsed} />
                 </button>
@@ -291,7 +291,7 @@ function TreeEditor({
                   maxLength={MAX_NODE_NAME_LENGTH}
                   className={cn(inlineInputClass, "flex-1 font-medium")}
                 />
-                <span className="shrink-0 px-1 text-label-sm text-foreground/40">
+                <span className="shrink-0 px-1 text-label-sm text-foreground-muted">
                   {mod.children.length} fitur
                 </span>
                 <button
@@ -299,7 +299,7 @@ function TreeEditor({
                   onClick={() => deleteModule(mod.id)}
                   disabled={isBusy}
                   aria-label={`Hapus modul ${mod.name || "tanpa nama"}`}
-                  className="rounded p-1 text-foreground/40 hover:bg-error/10 hover:text-error disabled:opacity-50"
+                  className="rounded p-1 text-foreground-muted hover:bg-error/10 hover:text-error disabled:opacity-50"
                 >
                   <TrashIcon />
                 </button>
@@ -326,7 +326,7 @@ function TreeEditor({
                         onClick={() => deleteFeature(mod.id, feature.id)}
                         disabled={isBusy}
                         aria-label={`Hapus fitur ${feature.name || "tanpa nama"}`}
-                        className="rounded p-1 text-foreground/40 hover:bg-error/10 hover:text-error disabled:opacity-50"
+                        className="rounded p-1 text-foreground-muted hover:bg-error/10 hover:text-error disabled:opacity-50"
                       >
                         <TrashIcon />
                       </button>
@@ -361,7 +361,7 @@ function TreeEditor({
       <InstructionField value={instruction} onChange={setInstruction} disabled={isBusy} />
 
       <div className="flex items-center justify-between gap-4">
-        <span className="text-body-sm text-foreground/50">
+        <span className="text-body-sm text-foreground-muted">
           {autosaveStatus === "saving" && "Menyimpan..."}
           {autosaveStatus === "saved" && "Tersimpan"}
           {autosaveStatus === "error" && "Gagal menyimpan"}

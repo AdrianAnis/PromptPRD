@@ -14,9 +14,13 @@ interface WizardShellProps {
 export function WizardShell({ project, children }: WizardShellProps) {
   const router = useRouter();
   const currentIndex = wizardStepIndex(project.current_step);
+  const currentStepLabel = WIZARD_STEPS[currentIndex]?.label ?? "";
 
   return (
     <div className="flex flex-col gap-6">
+      <h1 className="sr-only">
+        {project.name} — {currentStepLabel}
+      </h1>
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <Stepper

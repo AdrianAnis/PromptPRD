@@ -30,8 +30,8 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <Card className="flex flex-col gap-3">
       <div>
-        <h3 className="font-medium">{project.name}</h3>
-        <p className="text-xs text-foreground/50">
+        <h2 className="font-medium">{project.name}</h2>
+        <p className="text-xs text-foreground-muted">
           {project.status === "completed" ? "Completed" : `Step: ${project.current_step}`}
         </p>
       </div>

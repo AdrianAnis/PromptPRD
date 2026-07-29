@@ -192,12 +192,12 @@ function DocumentEditor({
 
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <span className="text-body-sm text-foreground/50">
+          <span className="text-body-sm text-foreground-muted">
             {autosaveStatus === "saving" && "Menyimpan..."}
             {autosaveStatus === "saved" && "Tersimpan"}
             {autosaveStatus === "error" && "Gagal menyimpan"}
           </span>
-          <span className="text-body-sm text-foreground/40">
+          <span className="text-body-sm text-foreground-muted">
             {markdown.length.toLocaleString("id-ID")} / {MAX_PRD_LENGTH.toLocaleString("id-ID")}
           </span>
         </div>

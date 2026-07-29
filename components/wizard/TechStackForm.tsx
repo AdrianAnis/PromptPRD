@@ -165,7 +165,7 @@ function DropdownForm({
       </Card>
 
       <div className="flex items-center justify-between gap-4">
-        <span className="text-body-sm text-foreground/50">
+        <span className="text-body-sm text-foreground-muted">
           {autosaveStatus === "saving" && "Menyimpan..."}
           {autosaveStatus === "saved" && "Tersimpan"}
           {autosaveStatus === "error" && "Gagal menyimpan"}

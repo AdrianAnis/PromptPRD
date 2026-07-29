@@ -67,7 +67,7 @@ function MermaidDiagramImpl({ code, onRendered }: MermaidDiagramProps) {
   }, [code, hasCode, theme, onRendered]);
 
   if (!hasCode) {
-    return <p className="text-body-sm text-foreground/50">Belum ada diagram.</p>;
+    return <p className="text-body-sm text-foreground-muted">Belum ada diagram.</p>;
   }
 
   if (error) {
@@ -79,7 +79,7 @@ function MermaidDiagramImpl({ code, onRendered }: MermaidDiagramProps) {
   }
 
   if (!svg) {
-    return <p className="text-body-sm text-foreground/50">Belum ada diagram.</p>;
+    return <p className="text-body-sm text-foreground-muted">Belum ada diagram.</p>;
   }
 
   return <div className="overflow-x-auto" dangerouslySetInnerHTML={{ __html: svg }} />;

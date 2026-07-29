@@ -232,7 +232,7 @@ function Editor({ projectId, initialCode }: { projectId: string; initialCode: st
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <span className="text-body-sm text-foreground/50">
+          <span className="text-body-sm text-foreground-muted">
             {autosaveStatus === "saving" && "Menyimpan..."}
             {autosaveStatus === "saved" && "Tersimpan"}
             {autosaveStatus === "error" && "Gagal menyimpan"}

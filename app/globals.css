@@ -17,6 +17,7 @@
   --warning-foreground: #4a2f00;
   --error: #ffb4ab;
   --error-foreground: #690005;
+  --foreground-muted: #8b93a0;
 }
 
 :root[data-theme="light"] {
@@ -36,6 +37,7 @@
   --warning-foreground: #ffffff;
   --error: #b91c1c;
   --error-foreground: #ffffff;
+  --foreground-muted: #5b6470;
 }
 
 @theme inline {
@@ -55,6 +57,7 @@
   --color-warning-foreground: var(--warning-foreground);
   --color-error: var(--error);
   --color-error-foreground: var(--error-foreground);
+  --color-foreground-muted: var(--foreground-muted);
 
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);

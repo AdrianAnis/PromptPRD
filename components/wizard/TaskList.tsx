@@ -157,7 +157,7 @@ function TaskTree({ projectId, epics }: { projectId: string; epics: Epic[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-body-sm text-foreground/50">
+      <p className="text-body-sm text-foreground-muted">
         {epics.length} Epic · {totalTasks} task
       </p>
 
@@ -174,7 +174,7 @@ function TaskTree({ projectId, epics }: { projectId: string; epics: Epic[] }) {
               >
                 <ChevronIcon collapsed={epicCollapsed} />
                 <span className="font-medium">{epic.title}</span>
-                <span className="ml-auto text-label-sm text-foreground/40">
+                <span className="ml-auto text-label-sm text-foreground-muted">
                   {epic.stories.length} story
                 </span>
               </button>
@@ -189,7 +189,7 @@ function TaskTree({ projectId, epics }: { projectId: string; epics: Epic[] }) {
                           <li key={task.id}>
                             <p className="text-body-sm">{task.title}</p>
                             {task.description && (
-                              <p className="text-body-sm text-foreground/50">{task.description}</p>
+                              <p className="text-body-sm text-foreground-muted">{task.description}</p>
                             )}
                           </li>
                         ))}

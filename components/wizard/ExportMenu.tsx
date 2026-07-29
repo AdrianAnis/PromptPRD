@@ -63,7 +63,7 @@ function ExportSection({
     <div className="flex flex-col gap-2 border-b border-border pb-4 last:border-b-0 last:pb-0">
       <div>
         <h3 className="text-body-md font-medium">{title}</h3>
-        <p className="text-body-sm text-foreground/50">{hint}</p>
+        <p className="text-body-sm text-foreground-muted">{hint}</p>
       </div>
       <div className="flex flex-wrap gap-2">{children}</div>
     </div>

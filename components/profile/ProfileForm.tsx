@@ -36,7 +36,7 @@ export function ProfileForm({ email, fullName }: { email: string; fullName: stri
         <Input name="fullName" label="Nama" defaultValue={fullName} required />
         <div>
           <Input label="Email" value={email} disabled />
-          <p className="mt-1.5 text-body-sm text-foreground/50">Email tidak dapat diubah.</p>
+          <p className="mt-1.5 text-body-sm text-foreground-muted">Email tidak dapat diubah.</p>
         </div>
         {profileState?.error && <p className="text-sm text-error">{profileState.error}</p>}
         {profileState?.success && <p className="text-sm text-success">Profil diperbarui.</p>}
